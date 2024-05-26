@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Enemy
   layers:
   - Default
   - TransparentFX
@@ -16,10 +17,10 @@ TagManager:
   - Player
   - Background
   - Bouncing
-  - 
-  - 
-  - 
-  - 
+  - Enemy
+  - Hazards
+  - Arrows
+  - Interactables
   - 
   - 
   - 
@@ -52,6 +53,15 @@ TagManager:
     locked: 0
   - name: Platforms
     uniqueID: 2456875923
+    locked: 0
+  - name: Hazards
+    uniqueID: 2798156135
+    locked: 0
+  - name: Interactables
+    uniqueID: 2783227249
+    locked: 0
+  - name: Enemies
+    uniqueID: 2558789217
     locked: 0
   - name: Player
     uniqueID: 551022761

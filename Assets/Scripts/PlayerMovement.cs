@@ -14,8 +14,15 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float runSpeed = 10f;
     [SerializeField] float jumpSpeed = 5f;
     [SerializeField] float climbSpeed = 5f;
-    float gravityScaleAtStart;
+    [SerializeField] Vector2 deathKick = new Vector2(10f, 10f);
+    [SerializeField] AudioClip playerDeathSFX;
+    [SerializeField] GameObject arrow;
+    [SerializeField] Transform bow;
 
+
+    float gravityScaleAtStart;
+    public bool isAlive = true;
+    
 
     void Awake()
     {
@@ -28,23 +35,57 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         gravityScaleAtStart = myRigidbody.gravityScale;
+        myAnimator.SetBool("isShooting", false);
     }
 
     void Update()
     {
+        if(!isAlive)
+        {
+            return;
+        }
         Run();
         FlipSprite();
         ClimbLadder();
+        Die();
+        
+    }
+
+    void OnFire(InputValue value)
+    {
+        if (!isAlive)
+        {
+            return;
+        }
+
+        Instantiate(arrow, bow.position, transform.rotation);
+       
+        if (value.isPressed)
+        {
+            myAnimator.SetBool("isShooting", true);
+        }
+        else
+        {
+            myAnimator.SetBool("isShooting", false);
+        }
     }
 
     void OnMove(InputValue value)
     {
+        if (!isAlive)
+        {
+            return;
+        }
         moveInput = value.Get<Vector2>();
         Debug.Log(moveInput);
     }
 
     void OnJump(InputValue value)
     {
+        if (!isAlive)
+        {
+            return;
+        }
         if (!myFeetCollider.IsTouchingLayers(LayerMask.GetMask("Ground")))
         {
             return;
@@ -59,6 +100,8 @@ public class PlayerMovement : MonoBehaviour
        
         
     }
+
+  
 
     void Run()
     {
@@ -115,11 +158,20 @@ public class PlayerMovement : MonoBehaviour
             myAnimator.SetBool("isClimbing", false);
         }
             
-            
-
-
-
-
     }
+
+    void Die()
+    {
+        if(myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Enemy")) || myBodyCollider.IsTouchingLayers(LayerMask.GetMask("Hazards")))
+        {
+            isAlive = false;
+            myAnimator.SetTrigger("Dying");
+            AudioSource.PlayClipAtPoint(playerDeathSFX, Camera.main.transform.position);
+            myRigidbody.velocity = deathKick;
+            FindObjectOfType<GameSession>().ProcessPlayerDeath();
+        }
+    }
+
+    
 
 }
